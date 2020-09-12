@@ -1,0 +1,31 @@
+
+<launch>
+<param name="/use_sim_time" value="true" />
+ <param name="robot_description" textfile="$(find cartographer_ros)/urdf/os1_sensor.urdf" />
+
+
+ <node pkg="tf" type="tf_remap" name="tf_remapper" output="screen">
+  <rosparam param="mappings">
+    [{old: /os1_imu , new: os1_imu}]
+  </rosparam>
+</node>
+
+  <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_offline_node" args="
+          -configuration_directory $(find cartographer_ros)/configuration_files
+          -configuration_basenames my_robot.lua
+          -bag_filenames $(arg bag_filenames)"
+      output="screen">
+    <remap from="scan" to="/os1_cloud_node/points" />
+    <remap from="imu" to="/imu/data" /> <!-- IMU Comp filter output -->
+    <remap from="imu" to="/os1_cloud_node/imu" /> 
+    <remap from="odom" to="/odometry/filtered" /> <!--EKF filter output, not used -->
+    <remap from="points2" to="/os1_cloud_node/points" /> <!-- PC2 output, not used -->
+  </node>
+  
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+
+</launch>

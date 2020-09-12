@@ -1,0 +1,3 @@
+[submodule "Run_based_segmentation"]
+	path = Run_based_segmentation
+	url = https://github.com/Kraftbar/Run_based_segmentation.git
